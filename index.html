@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afakiya va korreksiyaning zamonaviy usullari - Krossvord</title>
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --bg-color: #f0f9ff;
+            --card-bg: #ffffff;
+            --text-color: #334155;
+            --success: #10b981;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        h1 {
+            color: var(--primary-dark);
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+        .questions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .question-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 15px 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .question-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.08);
+        }
+        .q-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #1e293b;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+            text-transform: uppercase;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+        .feedback {
+            font-size: 14px;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+        .correct { color: var(--success); }
+        .incorrect { color: #ef4444; }
+        .footer-actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Afakiya va korreksiyaning zamonaviy usullari</h1>
+    <p class="subtitle">Kursdoshlar uchun interaktiv bilim sinovi (Krossvord-savollar)</p>
+
+    <div class="questions-list" id="quizContainer">
+        <!-- Savollar JavaScript orqali dinamik yuklanadi -->
+    </div>
+
+    <div class="footer-actions">
+        <button class="btn" onclick="checkAllAnswers()">Barchasini tekshirish</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { id: 1, q: "1. Ko'z gavhari (xrustalik) yo'qligi holati tibbiyotda qanday ataladi?", answer: "AFAKIYA" },
+        { id: 2, q: "2. Kataraktani ultratovush yordamida parchalab olib tashlashning zamonaviy jarrohlik usuli?", answer: "FAKEMULSIFIKATSIYA" },
+        { id: 3, q: "3. Afakiyani davolashda ko'z ichiga o'rnatiladigan sun'iy linza (qisqartmasi)?", answer: "IOL" },
+        { id: 4, q: "4. Shox pardaning optik kuchini o'zgartirib, ko'rishni to'g'rilovchi yuqori texnologiyali nur usuli?", answer: "LAZER" },
+        { id: 5, q: "5. Shox parda shaklining notekisligi tufayli yuzaga keladigan va tasvirni xiralashtiradigan nuqson?", answer: "ASTIGMATIZM" },
+        { id: 6, q: "6. Shox pardaning asta-sekin yupqalashib, konussimon shaklga kelib qolishi bilan kechadigan kasallik?", answer: "KERATOKONUS" },
+        { id: 7, q: "7. Tabiiy gavhar saqlanib qolgan holda, ko'z ichiga qo'shimcha qo'yiladigan sun'iy linza turi?", answer: "FAKELLINZA" },
+        { id: 8, q: "8. Ko'zning shishasimon tanasini jarrohlik yo'li bilan olib tashlash amaliyoti?", answer: "VITREKTOMIYA" },
+        { id: 9, q: "9. Shox pardani ko'chirib o'tkazish (transplantatsiya qilish) operatsiyasi?", answer: "KERATOPLASTIKA" },
+        { id: 10, q: "10. Ko'zning turli masofadagi narsalarni aniq ko'rish uchun moslashish qobiliyati?", answer: "AKOMODATSIYA" }
+    ];
+
+    const container = document.getElementById('quizContainer');
+
+    function renderQuiz() {
+        container.innerHTML = '';
+        questions.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <div class="q-title">${item.q}</div>
+                <div class="input-group">
+                    <input type="text" id="answer-${index}" placeholder="Javobni kiriting..." autocomplete="off">
+                    <button class="btn" onclick="checkSingle(${index})">Tekshirish</button>
+                </div>
+                <div class="feedback" id="feedback-${index}"></div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function checkSingle(index) {
+        const input = document.getElementById(`answer-${index}`);
+        const feedback = document.getElementById(`feedback-${index}`);
+        const userVal = input.value.trim().toUpperCase();
+        
+        if (userVal === questions[index].answer) {
+            feedback.textContent = "To'g'ri! ✔️";
+            feedback.className = "feedback correct";
+        } else {
+            feedback.textContent = "Noto'g'ri, qayta urinib ko'ring. ❌";
+            feedback.className = "feedback incorrect";
+        }
+    }
+
+    function checkAllAnswers() {
+        questions.forEach((item, index) => {
+            checkSingle(index);
+        });
+    }
+
+    renderQuiz();
+</script>
+
+</body>
+  </html>
+  
